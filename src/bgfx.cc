@@ -345,36 +345,21 @@ void bgfx_startup() {
   using namespace clbind;
   package_ sa(SAPkg);
   using namespace bgfx;
-  sa.def("renderFrame(int32_t)"_raw, +[](int32_t _msecs = -1) { return renderFrame(_msecs); });
-  sa.def("setViewClear(ViewId,uint16_t,uint32_t,float,uint8_t)"_raw,
-         +[](ViewId _id, uint16_t _flags, uint32_t _rgba = 0x000000ff, float _depth = 1.0f, uint8_t _stencil = 0) {
-           setViewClear(_id, _flags, _rgba, _depth, _stencil);
-         });
-  sa.def("init(Init&)"_raw, +[](Init &_init) { return bgfx::init(_init); });
-  sa.def("setViewRect(ViewId,uint16_t,uint16_t,BackbufferRatio::Enum)"_raw,
-         +[](ViewId _id, uint16_t _x, uint16_t _y, BackbufferRatio::Enum _ratio) {
-           setViewRect(_id, _x, _y, _ratio);
-         });
-  sa.def("reset(uint32_t,uint32_t,uint32_t,TextureFormat::Enum)"_raw,
-         +[](uint32_t _width,
-             uint32_t _height,
-             uint32_t _flags = BGFX_RESET_NONE,
-             TextureFormat::Enum _format = TextureFormat::Count) {
-           reset(_width, _height, _flags, _format);
-         });
-  sa.def("touch(ViewId)"_raw, +[](ViewId _id) { touch(_id); });
-  sa.def("dbgTextClear(uint8_t,bool)"_raw,
-         +[](uint8_t _attr = 0, bool _small = false) { dbgTextClear(_attr, _small); });
-  sa.def("dbgTextImage(uint16_t,uint16_t,uint16_t,uint16_t,const void*,uint16_t)"_raw,
-         +[](uint16_t _x, uint16_t _y, uint16_t _width, uint16_t _height, const void* _data, uint16_t _pitch) {
-           dbgTextImage(_x, _y, _width, _height, _data, _pitch);
-         });
-  sa.def("dbgTextPrintf(uint16_t,uint16_t,uint8_t,const char*,...)"_raw,
-         +[](uint16_t _x, uint16_t _y, uint8_t _attr, const char* _format) {
-           dbgTextPrintf(_x, _y, _attr, _format);
-         });
-  sa.def("setDebug(uint32_t)"_raw, +[](uint32_t _debug) { setDebug(_debug); });
-  sa.def("frame(bool)"_raw, +[](bool _capture = false) { return frame(_capture); });
-  sa.def("shutdown()"_raw, +[]() { shutdown(); });
+  sa.def("renderFrame", &renderFrame, "(cl:&optional (msecs -1))"_ll);
+  sa.def("setViewClear-rgba",
+         (void(*)(ViewId, uint16_t, uint32_t, float, uint8_t)) &setViewClear,
+         "(id flags cl:&optional (rgba #x000000ff) (depth 1.0) (stencil 0))"_ll);
+  sa.def("init", &bgfx::init, outValue<0>());
+  sa.def("setViewRect-ratio", (void(*)(ViewId, uint16_t, uint16_t, BackbufferRatio::Enum)) &setViewRect);
+  sa.def("reset",
+         (void(*)(uint32_t, uint32_t, uint32_t, TextureFormat::Enum)) &reset,
+         "(width height cl:&optional (flags bgfx-reset-none) (format texture-format-enum))"_ll);
+  sa.def("touch", &touch);
+  sa.def("dbgTextClear", &dbgTextClear);  // , "(cl:&optional (attr 0) (small nil))"
+  sa.def("dbgTextImage", &dbgTextImage);
+  // sa.def("dbgTextPrintf", &dbgTextPrintf);
+  sa.def("setDebug", &setDebug);
+  sa.def("frame", &frame);  // , "(cl:&optional (capture nil))"
+  sa.def("shutdown", &shutdown);
 }
 };
