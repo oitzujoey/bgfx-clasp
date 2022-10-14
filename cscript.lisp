@@ -1,0 +1,5 @@
+(k:recurse #P"src/")
+(k:library "bgfx" :required t :min-version "1.0.0")
+(k:library "glfw3" :required t :min-version "3.0.0")
+(k:includes #~"/usr/include/")
+(k:systems :bgfx)
